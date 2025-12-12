@@ -1,9 +1,43 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Day 1 — Christmas Puzzle</title>
+<style>
+body{margin:0;background:linear-gradient(#071a2e,#07385a);font-family:Arial,sans-serif;color:#fff}
+.wrap{max-width:900px;margin:20px auto;padding:18px;background:rgba(255,255,255,0.05);border-radius:12px}
+h1{margin-top:0}
+.note-badge{display:inline-block;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.08);margin-top:8px}
+.controls{margin-top:10px}
+button.control{padding:8px 12px;margin-right:8px;border-radius:6px;border:none;background:#ffeb3b;color:#000;font-weight:bold;cursor:pointer}
+#snow-canvas{position:fixed;left:0;top:0;pointer-events:none;z-index:9999}
+@media(max-width:600px){ .wrap{margin:8px;padding:12px} }
+</style>
+</head>
+<body>
+<canvas id="snow-canvas"></canvas>
+<div class="wrap">
 
-# --- Now create the individual day HTML content.
-# For brevity, these are simplified but functional puzzles; you can swap art assets easily.
+<script>
+(function() {
+  const now = new Date();
+  const avail = new Date("2025-12-25T00:00:00");
+  if (now < avail) {
+    document.write("<h1>This puzzle unlocks on " + avail.toDateString() + "</h1>");
+    document.write("<p>Come back on that day to begin!</p>");
+    throw new Error("Locked");
+  }
+})();
+</script>
 
-# Day 1 — jigsaw (3x3 swap)
-day1_inner = """<h2>Reassemble the Christmas Picture</h2>
+<div style="display:flex;justify-content:space-between;align-items:center">
+  <h1>Day 1</h1>
+  <div class="controls">
+    <button class="control" id="soundToggle">Enable Sound</button>
+    <button class="control" id="musicToggle">Toggle Music</button>
+  </div>
+</div>
+<h2>Reassemble the Christmas Picture</h2>
 <p>Click two pieces to swap them until the image is correct.</p>
 <div id="board" style="width:330px;height:330px;display:flex;flex-wrap:wrap;border:4px solid #3a6;margin-bottom:12px"></div>
 <div id="solved" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> MISTLETOE<br>Next: /day2</div>
@@ -44,272 +78,71 @@ function checkSolved(){
   }
 }
 </script>
-"""
-
-# Day 2 — spot the difference (click hotspots)
-day2_inner = """<h2>Spot the Differences</h2>
-<p>Click the five differences on the left image.</p>
-<div style="display:flex;gap:12px">
-  <div style="position:relative">
-    <img src="https://i.imgur.com/3ZQ3Qp7.png" style="max-width:330px;border:3px solid rgba(255,255,255,0.06)">
-    <div class="hot" data-id="1" style="position:absolute;left:48px;top:72px;width:28px;height:28px;border-radius:6px"></div>
-    <div class="hot" data-id="2" style="position:absolute;left:210px;top:140px;width:30px;height:30px;border-radius:6px"></div>
-    <div class="hot" data-id="3" style="position:absolute;left:120px;top:40px;width:26px;height:26px;border-radius:6px"></div>
-    <div class="hot" data-id="4" style="position:absolute;left:270px;top:220px;width:30px;height:30px;border-radius:6px"></div>
-    <div class="hot" data-id="5" style="position:absolute;left:180px;top:200px;width:26px;height:26px;border-radius:6px"></div>
-  </div>
-  <div><img src="https://i.imgur.com/3ZQ3Qp7.png" style="max-width:330px;border:3px solid rgba(255,255,255,0.06)"></div>
+<hr style="border-color:rgba(255,255,255,0.08)">
+<div style="text-align:left">
+<p>Melody piece for Day 1: <span class="note-badge">G4</span></p>
+<p>Collect all 12 pieces and reproduce the melody on Day 12 to open the final vault.</p>
 </div>
-<div id="result" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> REINDEER<br>Next: /day3</div>
-<script>
-const found=new Set();
-document.querySelectorAll('.hot').forEach(h=>{
-  h.addEventListener('click',()=>{
-    if(h.dataset.f) return;
-    h.dataset.f=1;
-    h.style.background='rgba(255,235,59,0.45)'; playNote('E4',0.12,0.6);
-    found.add(h.dataset.id);
-    if(found.size===5){ document.getElementById('result').style.display='block'; playNote('G4',0.4,0.8); }
-  });
-});
-</script>
-"""
+</div>
 
-# Day 3 — wordle clone
-day3_inner = """<h2>Holiday Wordle</h2>
-<p>6 tries — 5-letter Christmas word.</p>
-<div id="board" style="display:grid;grid-template-rows:repeat(6,50px);gap:6px;margin-bottom:10px"></div>
-<input id="guess" maxlength="5" style="text-transform:uppercase;padding:8px"><button id="sub" class="control">Guess</button>
-<div id="msg" style="margin-top:8px"></div>
-<div id="result" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> HOLLYBELL<br>Next: /day4</div>
 <script>
-const ANSWER = "FROST";
-let row=0;
-const board = document.getElementById('board');
-for(let r=0;r<6;r++){
-  const rowDiv=document.createElement('div'); rowDiv.style.display='grid'; rowDiv.style.gridTemplateColumns='repeat(5,50px)'; rowDiv.style.gap='6px';
-  for(let c=0;c<5;c++){ const cell=document.createElement('div'); cell.style.width='50px'; cell.style.height='50px'; cell.style.border='2px solid rgba(255,255,255,0.06)'; cell.style.display='flex'; cell.style.alignItems='center'; cell.style.justifyContent='center'; cell.style.fontWeight='bold'; cell.style.fontSize='20px'; cell.id='r'+r+'c'+c; rowDiv.appendChild(cell); }
-  board.appendChild(rowDiv);
-}
-document.getElementById('sub').addEventListener('click', submit);
-function submit(){
-  const g=document.getElementById('guess').value.toUpperCase();
-  if(g.length!==5){ document.getElementById('msg').textContent='Enter 5 letters'; return;}
-  for(let i=0;i<5;i++){
-    const cell=document.getElementById('r'+row+'c'+i); cell.textContent=g[i];
-    if(g[i]===ANSWER[i]){ cell.style.background='#6aaa64'; playNote('C5',0.08,0.5); }
-    else if(ANSWER.includes(g[i])){ cell.style.background='#c9b458'; playNote('E4',0.06,0.45); }
-    else{ cell.style.background='#787c7e'; playNote('D4',0.04,0.35); }
+// Snow
+(function() {
+  const canvas=document.getElementById('snow-canvas');
+  const ctx=canvas.getContext('2d');
+  let W,H,flakes=[];
+  function setup() {
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+    flakes=[];
+    for(let i=0;i<50;i++) flakes.push({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,d:Math.random()});
   }
-  if(g===ANSWER){ document.getElementById('result').style.display='block'; }
-  row++; document.getElementById('guess').value='';
-  if(row>=6 && g!==ANSWER){ document.getElementById('msg').textContent='Out of guesses — come back tomorrow!'; document.getElementById('sub').disabled=true; }
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(255,255,255,0.85)';
+    for(const f of flakes) {
+      ctx.beginPath();
+      ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+      ctx.fill();
+      f.y+=0.6+f.r*0.06;
+      f.x+=Math.sin(f.d+=0.01)*0.5;
+      if(f.y>H) f.y=-5;
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', setup);
+  setup(); draw();
+})();
+
+// Audio helpers
+let audioCtx=null;
+const freqs = {"C4": 261.63, "D4": 293.66, "E4": 329.63, "F4": 349.23, "G4": 392.0, "A4": 440.0, "B4": 493.88, "C5": 523.25};
+
+function ensureAudio() {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 }
-</script>
-"""
 
-# Day 4 — Lights Out 5x5
-day4_inner = """<h2>Fix the Tree Lights (Lights Out)</h2>
-<p>Turn all bulbs ON.</p>
-<div id="grid" style="display:grid;grid-template-columns:repeat(5,60px);gap:8px;margin-bottom:12px"></div>
-<div id="hint" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> TWINKLE<br>Next: /day5</div>
-<script>
-const N=5; const grid=document.getElementById('grid'); const cells=[];
-for(let i=0;i<N*N;i++){ const d=document.createElement('div'); d.style.width='60px'; d.style.height='60px'; d.style.borderRadius='50%'; d.style.background='#222'; d.style.cursor='pointer'; d.dataset.i=i; d.addEventListener('click',()=>toggle(i)); grid.appendChild(d); cells.push(d); }
-function toggle(i){ const r=Math.floor(i/N), c=i%N; const to=[i]; if(r>0)to.push(i-N); if(r<N-1)to.push(i+N); if(c>0)to.push(i-1); if(c<N-1)to.push(i+1); to.forEach(idx=>cells[idx].style.background = (cells[idx].style.background==='#222' ? 'radial-gradient(circle at 30% 30%, #fff 0%, #ffd700 40%, #ff6 70%)' : '#222')); check(); }
-function check(){ if(cells.every(x=> x.style.background.indexOf('#222')===-1)) { document.getElementById('hint').style.display='block'; playNote('A4',0.4,0.8); } }
-// randomize by applying a few toggles
-for(let t=0;t<10;t++){ toggle(Math.floor(Math.random()*25)); }
-</script>
-"""
-
-# Day 5 — Sleigh bells Morse (visual + WebAudio play)
-day5_inner = """<h2>Decode the Sleigh Bells (Morse)</h2>
-<p>Click Play to see the bell pattern. Then decode the letters to get the word.</p>
-<button id="play" class="control">Play Bells</button>
-<div id="pattern" style="margin-top:8px"></div>
-<p>Decoded word: <input id="answer"><button id="sub" class="control">Submit</button></p>
-<div id="hint" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> NORTHSTAR<br>Next: /day6</div>
-<script>
-const target="NORTH";
-const morseMap={"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--.."};
-const pattern = target.split('').map(ch=>morseMap[ch]).join(' ');
-document.getElementById('play').addEventListener('click',()=>{
-  const out=document.getElementById('pattern'); out.innerHTML='';
-  pattern.split(' ').forEach(code=>{
-    code.split('').forEach(sym=>{
-      const s=document.createElement('span'); s.textContent = (sym==='.'? '●':'—'); s.style.padding='4px'; out.appendChild(s);
-      playNote(sym==='.'? 'E4':'G4', sym==='.'?0.08:0.26, 0.6);
-    });
-    const sp=document.createElement('span'); sp.textContent=' ⎵ '; out.appendChild(sp);
-  });
-});
-document.getElementById('sub').addEventListener('click',()=>{
-  if(document.getElementById('answer').value.trim().toUpperCase()===target){ document.getElementById('hint').style.display='block'; playNote('C5',0.3,0.9); } else alert('Not quite — try decoding the pattern.');
-});
-</script>
-"""
-
-# Day 6 — Caesar wheel (simple rot)
-day6_inner = """<h2>Candy Cane Cipher Wheel</h2>
-<p>Rotate the shift until the message reads a readable line containing the password.</p>
-<div id="enc" style="font-family:monospace;background:#001f3f;padding:10px;border-radius:8px"></div>
-<div style="margin-top:8px"><button class="control" onclick="rot(-1)">‹</button> <span id="shift">0</span> <button class="control" onclick="rot(1)">›</button></div>
-<div id="hint" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> SNOWDANCE<br>Next: /day7</div>
-<script>
-const cipher="URYYB JBEX? GUVF VF LBH'F CEBTENZZRQ";
-let shift=0;
-function caesar(s, shift){
-  return s.replace(/[A-Z]/ig, c=>{ const base = c===c.toUpperCase()?65:97; const code = ((c.charCodeAt(0)-base - shift +26)%26)+base; return String.fromCharCode(code); });
+function playNote(name,dur=0.45,vol=0.7) {
+  try {
+    ensureAudio();
+    const o=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    o.frequency.value = freqs[name] || 440;
+    g.gain.value = vol;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+    o.stop(audioCtx.currentTime + dur + 0.02);
+  } catch(e){}
 }
-function render(){ document.getElementById('enc').textContent = caesar(cipher, shift); document.getElementById('shift').textContent = shift; if(caesar(cipher, shift).toUpperCase().includes("PASSWORD")) document.getElementById('hint').style.display='block'; }
-function rot(n){ shift=(shift+n+26)%26; playNote('D4',0.06,0.45); render(); }
-render();
-</script>
-"""
 
-# Day 7 — Santa route (simple path visit)
-day7_inner = """<h2>Santa's Route — Visit highlighted houses</h2>
-<p>Click to draw an adjacent path that touches all highlighted houses.</p>
-<div id="grid"></div>
-<div id="hint" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> CANDLELIGHT<br>Next: /day8</div>
-<script>
-const N=8; const container=document.getElementById('grid'); const tbl=document.createElement('table'); tbl.style.margin='auto'; tbl.style.borderCollapse='collapse';
-let table=[];
-for(let r=0;r<N;r++){ const tr=document.createElement('tr'); table.push([]); for(let c=0;c<N;c++){ const td=document.createElement('td'); td.style.width='40px'; td.style.height='40px'; td.style.border='1px solid rgba(255,255,255,0.06)'; td.style.textAlign='center'; td.dataset.r=r; td.dataset.c=c; td.addEventListener('click', ()=>cellClick(td)); tr.appendChild(td); table[r].push(td); } tbl.appendChild(tr); }
-container.appendChild(tbl);
-const houses=new Set();
-while(houses.size<6){ houses.add(Math.floor(Math.random()*N)+','+Math.floor(Math.random()*N)); }
-houses.forEach(k=>{ const r=Number(k.split(',')[0]), c=Number(k.split(',')[1]); table[r][c].style.background='rgba(255,235,59,0.3)'; table[r][c].textContent='🏠'; });
-let path=[];
-function cellClick(td){
-  const r=Number(td.dataset.r), c=Number(td.dataset.c);
-  if(path.length===0){ path.push([r,c]); td.style.background='rgba(0,200,255,0.25)'; playNote('C4',0.08,0.6); return; }
-  const [pr,pc]=path[path.length-1];
-  if(Math.abs(pr-r)+Math.abs(pc-c)!==1){ alert('Move to an adjacent square'); return; }
-  for(const p of path) if(p[0]===r && p[1]===c){ alert('Cannot revisit'); return; }
-  path.push([r,c]); td.style.background='rgba(0,200,255,0.25)'; playNote('E4',0.06,0.55);
-  checkWin();
-}
-function checkWin(){ const ok = Array.from(houses).every(k=>{ const [r,c]=k.split(',').map(Number); return path.some(p=>p[0]===r && p[1]===c); }); if(ok){ document.getElementById('hint').style.display='block'; playNote('G4',0.4,0.85); } }
-</script>
-"""
-
-# Day 8 — Riddles
-day8_inner = """<h2>Clara's Riddle Book</h2>
-<p>Solve the three riddles.</p>
-<div><b>Riddle 1:</b> I hang at doorways dressed in green, my berries red and often seen. What am I?<br><input id="a1"></div>
-<div><b>Riddle 2:</b> Round and spiced, on a stick I'm sweet — a yuletide treat. What am I?<br><input id="a2"></div>
-<div><b>Riddle 3:</b> I glide with gifts across the night, my antlered team take flight. What am I?<br><input id="a3"></div>
-<button id="sub" class="control">Submit</button>
-<div id="hint" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> PEPPERMINT<br>Next: /day9</div>
-<script>
-document.getElementById('sub').addEventListener('click',()=>{
-  const r1=document.getElementById('a1').value.trim().toUpperCase();
-  const r2=document.getElementById('a2').value.trim().toUpperCase();
-  const r3=document.getElementById('a3').value.trim().toUpperCase();
-  if(r1==='WREATH' && (r2==='CANDY' || r2==='CANDY CANE' || r2==='CANDYCANE') && (r3==='SANTA' || r3==='SANTA CLAUS')){ document.getElementById('hint').style.display='block'; playNote('C5',0.35,0.85); } else alert('Try common holiday words.');
+document.addEventListener('click', function initOnce() {
+  ensureAudio();
+  document.getElementById('soundToggle')?.addEventListener('click', ()=>playNote('C4',0.3,0.7));
+  document.getElementById('musicToggle')?.addEventListener('click', ()=>playNote('G4',0.4,0.4));
+  document.removeEventListener('click', initOnce);
 });
 </script>
-"""
 
-# Day 9 — snowflake collect
-day9_inner = """<h2>Catch the Right Snowflakes</h2>
-<p>Click only the snowflakes with a star (★) to collect letters. Collect the letters to reveal the password.</p>
-<div id="sky" style="height:360px;border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden"></div>
-<div id="collected" style="margin-top:8px">Letters: <span id="letters"></span></div>
-<div id="hint" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> FROSTBITTEN<br>Next: /day10</div>
-<script>
-const sky=document.getElementById('sky'); const pool='FROSTBITTEN'.split(''); const letters=[]; for(let i=0;i<40;i++){ const s=document.createElement('div'); s.style.position='absolute'; s.style.left = (Math.random()*280)+'px'; s.style.top = (Math.random()*320)+'px'; s.style.cursor='pointer'; s.style.fontSize='18px'; const has = Math.random()<0.45 && pool.length>0; if(has){ const ch = pool.shift(); const star = Math.random()<0.6; s.textContent = (star? '★'+ch : '○'+ch); s.dataset.letter=ch; s.dataset.star = star? '1':'0'; } else s.textContent = Math.random()<0.5?'○':''; s.addEventListener('click', ()=>{ if(s.dataset.clicked) return; s.dataset.clicked=1; if(s.dataset.star==='1' && s.dataset.letter){ letters.push(s.dataset.letter); document.getElementById('letters').textContent = letters.join(''); playNote('E4',0.06,0.55); } if(letters.length>=10){ document.getElementById('hint').style.display='block'; playNote('G4',0.3,0.8); } }); sky.appendChild(s); }
-</script>
-"""
+</body></html>
 
-# Day 10 — carol fill (text)
-day10_inner = """<h2>Finish the Carol</h2>
-<p>Fill the missing word from each carol line.</p>
-<div>1. "Silent night, holy night, all is <input id='q1' size='8'></div>
-<div>2. "Joy to the world, the Lord is <input id='q2' size='8'></div>
-<div>3. "Hark! the herald angels sing, Glory to the newborn <input id='q3' size='8'></div>
-<button id='sub' class="control">Submit</button>
-<div id="hint" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> GLORIAINEXCELSIS<br>Next: /day11</div>
-<script>
-document.getElementById('sub').addEventListener('click', ()=>{
-  const a1=document.getElementById('q1').value.trim().toUpperCase();
-  const a2=document.getElementById('q2').value.trim().toUpperCase();
-  const a3=document.getElementById('q3').value.trim().toUpperCase();
-  if(a1.startsWith('SLEEP') && a2.startsWith('COME') && (a3.startsWith('BABY')||a3.startsWith('CHILD')||a3.startsWith('NEWBORN'))){ document.getElementById('hint').style.display='block'; playNote('C5',0.35,0.85); } else alert('One or more answers look off.');
-});
-</script>
-"""
-
-# Day 11 — 3-stage puzzle box
-day11_inner = """<h2>Elf Mechanism — 3 Stages</h2>
-<p>Stage 1: Order the 3x3 slider tiles (click two to swap). Stage 2: Rotate ornament to show ★. Stage 3: Add 4 symbols below. Then unlock.</p>
-<div id="slider" style="width:210px;display:flex;flex-wrap:wrap;margin:auto"></div>
-<button id="check1" class="control">Check Stage 1</button>
-<div style="margin-top:12px;text-align:center"><div id="rot" style="width:120px;height:80px;border:1px solid rgba(255,255,255,0.06);display:inline-flex;align-items:center;justify-content:center;font-size:32px">🎁</div><br>
-<button id="rotL" class="control">⟲</button><button id="rotR" class="control">⟳</button><button id="check2" class="control">Check Stage 2</button></div>
-<div id="symbols" style="margin-top:12px"></div>
-<button id="checkAll" class="control" style="margin-top:10px">Unlock</button>
-<div id="hint" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.06)"><strong>Password:</strong> EVERGREEN<br>Next: /day12</div>
-<script>
-// Stage1
-const slider=document.getElementById('slider'); let nums=[1,2,3,4,5,6,7,8,9]; nums.sort(()=>Math.random()-0.5);
-nums.forEach(n=>{ const d=document.createElement('div'); d.style.width='70px'; d.style.height='70px'; d.style.display='flex'; d.style.alignItems='center'; d.style.justifyContent='center'; d.style.border='1px solid rgba(255,255,255,0.06)'; d.style.margin='2px'; d.textContent=n; d.className='tile'; d.addEventListener('click', ()=>tileClick(d)); slider.appendChild(d); });
-let first=null;
-function tileClick(el){ if(!first){ first=el; el.style.outline='2px solid #ffcc00'; return; } const t=first.textContent; first.textContent = el.textContent; el.textContent = t; first.style.outline=''; first=null; }
-document.getElementById('check1').addEventListener('click', ()=>{ const arr=Array.from(document.querySelectorAll('.tile')).map(x=>Number(x.textContent)); const ok=arr.every((v,i)=> v===i+1); alert(ok? 'Stage1 complete':'Stage1 not ordered'); });
-
-// Stage2 rotate
-const symbols=['★','❄','⛄','🎄','🎁']; let idx=0; const rotEl=document.getElementById('rot');
-document.getElementById('rotL').addEventListener('click', ()=>{ idx=(idx-1+symbols.length)%symbols.length; rotEl.textContent=symbols[idx]; playNote('E4',0.06,0.45); });
-document.getElementById('rotR').addEventListener('click', ()=>{ idx=(idx+1)%symbols.length; rotEl.textContent=symbols[idx]; playNote('G4',0.06,0.45); });
-document.getElementById('check2').addEventListener('click', ()=>{ alert(symbols[idx]==='★'? 'Stage2 OK' : 'Rotate to ★'); });
-
-// Stage3 add symbols
-const symDiv=document.getElementById('symbols'); symbols.forEach(s=>{ const b=document.createElement('button'); b.textContent=s; b.className='control'; b.style.margin='4px'; b.onclick=()=>{ const sp=document.createElement('span'); sp.textContent=s; sp.style.margin='4px'; symDiv.appendChild(sp); playNote('C4',0.06,0.45); }; document.body.insertBefore(b,symDiv); });
-
-document.getElementById('checkAll').addEventListener('click', ()=>{
-  const arr = Array.from(document.querySelectorAll('.tile')).map(x=>Number(x.textContent));
-  const ok1 = arr.every((v,i)=> v===i+1);
-  const ok2 = symbols[idx]==='★';
-  const ok3 = symDiv.children.length>=4;
-  if(ok1 && ok2 && ok3){ document.getElementById('hint').style.display='block'; playNote('C5',0.4,0.9); } else alert('Complete all stages: order tiles, rotate to ★, add 4 symbols.');
-});
-</script>
-"""
-
-# Day 12 — final vault and melody keyboard
-day12_inner = """<h2>The Final Vault</h2>
-<p>Enter the 11 passwords you collected earlier (one per line) to reveal the final vault UI if desired, or reproduce the melody below to open it.</p>
-<textarea id="all" rows="6" style="width:100%;padding:8px" placeholder="Paste the 11 passwords, one per line"></textarea><br>
-<button id="checkPwd" class="control">Check Passwords</button>
-<div id="pwdMsg" style="margin-top:8px;color:#fff"></div>
-<div id="melodyArea" style="margin-top:12px"></div>
-<div id="final" style="display:none;margin-top:12px;padding:12px;background:rgba(255,255,255,0.06)">
-  <h2>Present Location Revealed</h2>
-  <p>Your present is hidden <strong>under the foot of the bed upstairs</strong>. Merry Christmas! ❤</p>
-</div>
-<script>
-const expected = ["MISTLETOE","REINDEER","HOLLYBELL","TWINKLE","NORTHSTAR","SNOWDANCE","CANDLELIGHT","PEPPERMINT","FROSTBITTEN","GLORIAINEXCELSIS","EVERGREEN"];
-document.getElementById('checkPwd').addEventListener('click', ()=>{
-  const text = document.getElementById('all').value.toUpperCase().split('\\n').map(s=>s.trim()).filter(Boolean);
-  if(text.length!==11){ alert('Please enter 11 passwords.'); return; }
-  const missing = expected.filter(x=>!text.includes(x));
-  if(missing.length===0){ document.getElementById('final').style.display='block'; playNote('C5',0.4,0.9); } else alert('Missing or incorrect: '+missing.join(', '));
-});
-
-// Melody keyboard UI
-const targetMelody = {melody_json};
-const played = [];
-const kbd = document.createElement('div'); kbd.style.marginTop='8px'; document.getElementById('melodyArea').appendChild(kbd);
-const noteNames = Object.keys(freqs);
-noteNames.forEach(n=>{ const b=document.createElement('button'); b.textContent=n; b.className='control'; b.style.margin='6px'; b.onclick=()=>{ playNote(n,0.45,0.8); played.push(n); document.getElementById('pwdMsg').textContent = 'Played: ' + played.join(', '); }; kbd.appendChild(b); });
-const checkBtn = document.createElement('button'); checkBtn.textContent='Check Melody'; checkBtn.className='control'; checkBtn.style.display='block'; checkBtn.style.marginTop='8px'; document.getElementById('melodyArea').appendChild(checkBtn);
-checkBtn.addEventListener('click', ()=>{
-  if(played.length!==targetMelody.length){ alert('Play exactly ' + targetMelody.length + ' notes.'); return; }
-  const ok = played.every((v,i)=> v===targetMelody[i]);
-  if(ok){ document.getElementById('final').style.display='block'; playNote('C5',0.6,0.95); } else { alert('Not quite — try again.'); }
-});
-</script>
-""".replace("{melody_json}", json.dumps(melody_notes))
